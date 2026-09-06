@@ -31,7 +31,6 @@
         .mt-12 { margin-top: 12px; }
         .mb-8 { margin-bottom: 8px; }
         .mb-12 { margin-bottom: 12px; }
-        .text-center { text-align: center; }
         
         .card {
             background: #161c26;
@@ -357,31 +356,6 @@
         }
         .modal .quick-days button:hover { background: #2a3340; color: #e8edf2; }
 
-        #auth-section {
-            background: #1e2835;
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 12px;
-        }
-        #auth-section .auth-status {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .auth-dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-        .auth-dot.online { background: #22c55e; }
-        .auth-dot.offline { background: #ef4444; }
-        .auth-dot.loading { background: #f59e0b; animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        
         .week-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -399,6 +373,13 @@
         .week-day.done { background: #22c55e; color: #0a0e14; }
         .week-day.today { border: 2px solid #f97316; }
         .week-day .day-num { font-weight: 700; font-size: 0.8rem; }
+        
+        #save-status {
+            text-align: center;
+            color: #4a5568;
+            font-size: 0.7rem;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -415,15 +396,6 @@
 
 <!-- APP -->
 <div id="app" class="hidden">
-
-    <!-- Auth -->
-    <div id="auth-section">
-        <div class="auth-status">
-            <span class="auth-dot offline" id="auth-dot"></span>
-            <span id="auth-text">Conectando con Google Drive...</span>
-            <button id="auth-btn" class="btn-sm btn-primary" style="padding:4px 16px; width:auto; font-size:0.75rem;">Iniciar sesión</button>
-        </div>
-    </div>
 
     <!-- HOME -->
     <div id="page-home">
@@ -481,6 +453,7 @@
                 <div><div style="color:#60a5fa; font-size:1.1rem; font-weight:700;" id="home-total-exercises">0</div><div style="color:#8895a7; font-size:0.7rem;">Ejercicios hechos</div></div>
             </div>
         </div>
+        <div id="save-status">💾 Progreso guardado en tu navegador</div>
     </div>
 
     <!-- DAY PAGE -->
@@ -563,51 +536,45 @@
 
 <script>
 // ============================================================
-// CONFIGURACIÓN
+// CONFIGURACIÓN - SIN GOOGLE DRIVE
 // ============================================================
-const CLIENT_ID = '399896703761-l8p9g29g9q2muhlob2b0jae9akicv8kh.apps.googleusercontent.com';
-const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'];
-const SCOPES = 'https://www.googleapis.com/auth/drive.file';
-const FILE_NAME = 'entrenamiento_122_progreso.json';
-
-// BASE URL DE IMÁGENES
-const IMG_BASE = 'imagenes plan 122 días/';
+const IMG_BASE = 'imagenes%20plan%20122%20d%C3%ADas/';
 
 // ============================================================
-// MAPA DE IMÁGENES POR EJERCICIO (NOMBRES DEL PDF)
+// MAPA DE IMÁGENES
 // ============================================================
 const EJERCICIOS_IMG = {
-    'sentadilla': { img: 'sentadilla con barra.png', desc: 'Sentadilla con barra' },
-    'rdl': { img: 'peso muerto rumano.png', desc: 'Peso muerto rumano' },
-    'zancada atrás': { img: 'zancada hacia atrás.png', desc: 'Zancada hacia atrás' },
-    'hip thrust': { img: 'hip thrust.png', desc: 'Hip thrust' },
+    'sentadilla': { img: 'sentadilla.png', desc: 'Sentadilla con barra' },
+    'rdl': { img: 'rdl.png', desc: 'Peso muerto rumano' },
+    'zancada atrás': { img: 'zancada.png', desc: 'Zancada hacia atrás' },
+    'hip thrust': { img: 'hip-thrust.png', desc: 'Hip thrust' },
     'pantorrilla': { img: 'pantorrilla.png', desc: 'Elevación de pantorrillas' },
-    'dead bug': { img: 'dead bug.png', desc: 'Dead bug' },
+    'dead bug': { img: 'dead-bug.png', desc: 'Dead bug' },
     'plancha': { img: 'plancha.png', desc: 'Plancha' },
-    'remo barra': { img: 'remo con barra.png', desc: 'Remo con barra' },
-    'remo unilateral': { img: 'remo unilateral con mancuerna.png', desc: 'Remo unilateral con mancuerna' },
-    'pullover': { img: 'pullover con mancuerna.png', desc: 'Pullover con mancuerna' },
-    'face pull': { img: 'face pull.png', desc: 'Face pull con banda' },
-    'curl Z': { img: 'curl z.png', desc: 'Curl con barra Z' },
-    'curl martillo': { img: 'curl martillo.png', desc: 'Curl martillo' },
-    'pallof': { img: 'pallof press.png', desc: 'Pallof press' },
-    'press mancuernas': { img: 'press de pecho con mancuernas.png', desc: 'Press de pecho con mancuernas' },
+    'remo barra': { img: 'remo-barra.png', desc: 'Remo con barra' },
+    'remo unilateral': { img: 'remo-unilateral.png', desc: 'Remo unilateral con mancuerna' },
+    'pullover': { img: 'pullover.png', desc: 'Pullover con mancuerna' },
+    'face pull': { img: 'face-pull.png', desc: 'Face pull con banda' },
+    'curl Z': { img: 'curl-z.png', desc: 'Curl con barra Z' },
+    'curl martillo': { img: 'curl-martillo.png', desc: 'Curl martillo' },
+    'pallof': { img: 'pallof.png', desc: 'Pallof press' },
+    'press mancuernas': { img: 'press-pecho.png', desc: 'Press de pecho con mancuernas' },
     'flexiones': { img: 'flexiones.png', desc: 'Flexiones' },
-    'press hombros': { img: 'press de hombros con mancuernas.png', desc: 'Press de hombros con mancuernas' },
+    'press hombros': { img: 'press-hombros.png', desc: 'Press de hombros con mancuernas' },
     'laterales': { img: 'laterales.png', desc: 'Elevaciones laterales' },
     'aperturas liga': { img: 'aperturas.png', desc: 'Aperturas con banda' },
     'tríceps': { img: 'triceps.png', desc: 'Extensión de tríceps' },
-    'búlgara': { img: 'sentadilla búlgara.png', desc: 'Sentadilla búlgara' },
-    'sumo': { img: 'peso muerto sumo.png', desc: 'Peso muerto sumo' },
+    'búlgara': { img: 'bulgara.png', desc: 'Sentadilla búlgara' },
+    'sumo': { img: 'sumo.png', desc: 'Peso muerto sumo' },
     'step-up': { img: 'step-up.png', desc: 'Step-up' },
-    'curl deslizadores': { img: 'curl sliders.png', desc: 'Curl femoral con sliders' },
-    'plancha lateral': { img: 'plancha lateral.png', desc: 'Plancha lateral' },
+    'curl deslizadores': { img: 'curl-sliders.png', desc: 'Curl femoral con sliders' },
+    'plancha lateral': { img: 'plancha-lateral.png', desc: 'Plancha lateral' },
     'crunch': { img: 'crunch.png', desc: 'Crunch con balón' },
     'LISS': { img: 'liss.png', desc: 'Cardio LISS' },
     'boxeo': { img: 'boxeo.png', desc: 'Boxeo al saco' },
     'movilidad': { img: 'movilidad.png', desc: 'Movilidad' },
     'press': { img: 'press.png', desc: 'Press con mancuernas' },
-    'militar': { img: 'press militar.jpg', desc: 'Press militar' },
+    'militar': { img: 'press-militar.jpg', desc: 'Press militar' },
     'descanso': { img: null, desc: 'Descanso' },
     'recuperación': { img: null, desc: 'Recuperación' },
     'core': { img: null, desc: 'Core' },
@@ -629,8 +596,6 @@ function getEjercicioInfo(nombre) {
 let PLAN = [];
 let progreso = { dias: {}, ejercicios: {} };
 let diaActual = 1;
-let tokenClient = null;
-let gapiInicializado = false;
 let timerInterval = null;
 let timerSegundos = 90;
 let timerRestantes = 90;
@@ -686,25 +651,25 @@ function generarPlan() {
         5: { semana: 1, sesion: 'Piernas B', trabajo: 'Búlgara 3×8-12/lado; sumo 3×8-12; step-up 3×8-12/lado; hip thrust 3×10-15; curl deslizadores 3×8-15; pantorrilla 3×15-20; plancha lateral 2×20-40s' },
         6: { semana: 1, sesion: 'LISS', trabajo: '30-45 min' },
         7: { semana: 1, sesion: 'Descanso', trabajo: 'Recuperación/movilidad opcional' },
-        8: { semana: 2, sesion: 'Piernas A Igual Día 1; intenta 1 repetición adicional por serie', trabajo: 'Sentadilla 3×9-12; RDL 3×9-12; zancada atrás 3×9-12/lado; hip thrust 3×11-15; pantorrilla 3×12-20; dead bug 3×8-12/lado' },
-        9: { semana: 2, sesion: 'Espalda/bíceps Igual Día 2; intenta aumentar repeticiones', trabajo: 'Remo barra 3×9-12; remo unilateral 3×11-12; pullover 2×11-15; face pull 3×13-20; curl Z 3×9-12; martillo 2×11-15; Pallof 3×11-15' },
+        8: { semana: 2, sesion: 'Piernas A', trabajo: 'Sentadilla 3×9-12; RDL 3×9-12; zancada atrás 3×9-12/lado; hip thrust 3×11-15; pantorrilla 3×12-20; dead bug 3×8-12/lado' },
+        9: { semana: 2, sesion: 'Espalda/bíceps', trabajo: 'Remo barra 3×9-12; remo unilateral 3×11-12; pullover 2×11-15; face pull 3×13-20; curl Z 3×9-12; martillo 2×11-15; Pallof 3×11-15' },
         10: { semana: 2, sesion: 'LISS', trabajo: '30-40 min + movilidad' },
-        11: { semana: 2, sesion: 'Pecho/hombros/tríceps Igual Día 4; aumenta repeticiones', trabajo: 'Press mancuernas 3×9-12; press barra/flexiones 3×9-12; press hombros 3×9-12; laterales 3×13-20; aperturas liga 2×13-20; tríceps 3×11-15' },
-        12: { semana: 2, sesion: 'Piernas B Igual Día 5; aumenta repeticiones', trabajo: 'Búlgara 3×9-12/lado; sumo 3×9-12; step-up 3×9-12/lado; hip thrust 3×11-15; curl deslizadores 3×9-15; pantorrilla 3×15-20; plancha lateral 2×30-40s' },
+        11: { semana: 2, sesion: 'Pecho/hombros/tríceps', trabajo: 'Press mancuernas 3×9-12; press barra/flexiones 3×9-12; press hombros 3×9-12; laterales 3×13-20; aperturas liga 2×13-20; tríceps 3×11-15' },
+        12: { semana: 2, sesion: 'Piernas B', trabajo: 'Búlgara 3×9-12/lado; sumo 3×9-12; step-up 3×9-12/lado; hip thrust 3×11-15; curl deslizadores 3×9-15; pantorrilla 3×15-20; plancha lateral 2×30-40s' },
         13: { semana: 2, sesion: 'LISS', trabajo: '35-45 min' },
         14: { semana: 2, sesion: 'Descanso', trabajo: 'Recuperación' },
-        15: { semana: 3, sesion: 'Piernas A aumenta ligeramente carga', trabajo: 'Sentadilla 3×9-12; RDL 3×9-12; zancada atrás 3×9-12/lado; hip thrust 3×11-15; pantorrilla 3×12-20; dead bug 3×8-12/lado' },
-        16: { semana: 3, sesion: 'Espalda/bíceps aumenta ligeramente carga', trabajo: 'Remo barra 3×9-12; remo unilateral 3×11-12; pullover 2×11-15; face pull 3×13-20; curl Z 3×9-12; martillo 2×11-15; Pallof 3×11-15' },
+        15: { semana: 3, sesion: 'Piernas A', trabajo: 'Sentadilla 3×9-12; RDL 3×9-12; zancada atrás 3×9-12/lado; hip thrust 3×11-15; pantorrilla 3×12-20; dead bug 3×8-12/lado' },
+        16: { semana: 3, sesion: 'Espalda/bíceps', trabajo: 'Remo barra 3×9-12; remo unilateral 3×11-12; pullover 2×11-15; face pull 3×13-20; curl Z 3×9-12; martillo 2×11-15; Pallof 3×11-15' },
         17: { semana: 3, sesion: 'LISS', trabajo: '35-45 min' },
-        18: { semana: 3, sesion: 'Pecho/hombros/tríceps aumenta ligeramente carga', trabajo: 'Press mancuernas 3×9-12; press barra/flexiones 3×9-12; press hombros 3×9-12; laterales 3×13-20; aperturas liga 2×13-20; tríceps 3×11-15' },
-        19: { semana: 3, sesion: 'Piernas B aumenta ligeramente carga', trabajo: 'Búlgara 3×9-12/lado; sumo 3×9-12; step-up 3×9-12/lado; hip thrust 3×11-15; curl deslizadores 3×9-15; pantorrilla 3×15-20; plancha lateral 2×30-40s' },
+        18: { semana: 3, sesion: 'Pecho/hombros/tríceps', trabajo: 'Press mancuernas 3×9-12; press barra/flexiones 3×9-12; press hombros 3×9-12; laterales 3×13-20; aperturas liga 2×13-20; tríceps 3×11-15' },
+        19: { semana: 3, sesion: 'Piernas B', trabajo: 'Búlgara 3×9-12/lado; sumo 3×9-12; step-up 3×9-12/lado; hip thrust 3×11-15; curl deslizadores 3×9-15; pantorrilla 3×15-20; plancha lateral 2×30-40s' },
         20: { semana: 3, sesion: 'LISS', trabajo: '35-45 min' },
         21: { semana: 3, sesion: 'Descanso', trabajo: 'Recuperación' },
-        22: { semana: 4, sesion: 'Piernas A, manten la carga anterior más repeticiones', trabajo: 'Sentadilla 3×10-12; RDL 3×10-12; zancada atrás 3×10-12/lado; hip thrust 3×12-15; pantorrilla 3×15-20; dead bug 3×10-12/lado' },
-        23: { semana: 4, sesion: 'Espalda/bíceps manten la carga anterior más repeticiones', trabajo: 'Remo barra 3×10-12; remo unilateral 3×12-12; pullover 2×12-15; face pull 3×14-20; curl Z 3×10-12; martillo 2×12-15; Pallof 3×12-15' },
+        22: { semana: 4, sesion: 'Piernas A', trabajo: 'Sentadilla 3×10-12; RDL 3×10-12; zancada atrás 3×10-12/lado; hip thrust 3×12-15; pantorrilla 3×15-20; dead bug 3×10-12/lado' },
+        23: { semana: 4, sesion: 'Espalda/bíceps', trabajo: 'Remo barra 3×10-12; remo unilateral 3×12-12; pullover 2×12-15; face pull 3×14-20; curl Z 3×10-12; martillo 2×12-15; Pallof 3×12-15' },
         24: { semana: 4, sesion: 'LISS', trabajo: '30-40 min' },
-        25: { semana: 4, sesion: 'Pecho/hombros/tríceps manten la carga anterior más repeticiones', trabajo: 'Press mancuernas 3×10-12; press barra/flexiones 3×10-12; press hombros 3×10-12; laterales 3×14-20; aperturas liga 2×14-20; tríceps 3×12-15' },
-        26: { semana: 4, sesion: 'Piernas B manten la carga anterior más repeticiones', trabajo: 'Búlgara 3×10-12/lado; sumo 3×10-12; step-up 3×10-12/lado; hip thrust 3×12-15; curl deslizadores 3×10-15; pantorrilla 3×16-20; plancha lateral 2×30-40s' },
+        25: { semana: 4, sesion: 'Pecho/hombros/tríceps', trabajo: 'Press mancuernas 3×10-12; press barra/flexiones 3×10-12; press hombros 3×10-12; laterales 3×14-20; aperturas liga 2×14-20; tríceps 3×12-15' },
+        26: { semana: 4, sesion: 'Piernas B', trabajo: 'Búlgara 3×10-12/lado; sumo 3×10-12; step-up 3×10-12/lado; hip thrust 3×12-15; curl deslizadores 3×10-15; pantorrilla 3×16-20; plancha lateral 2×30-40s' },
         27: { semana: 4, sesion: 'LISS', trabajo: '30-40 min' },
         28: { semana: 4, sesion: 'Evaluación', trabajo: 'Mediciones + movilidad; sin entrenamiento pesado' }
     };
@@ -718,18 +683,18 @@ function generarPlan() {
         33: { semana: 5, sesion: 'Piernas B', trabajo: 'Búlgara 3×8-12; sumo 3×8-12; step-up 3×8-12; hip thrust 4×8-12; curl 3×10-15; core 3×10-15' },
         34: { semana: 5, sesion: 'LISS', trabajo: '35-50 min' },
         35: { semana: 5, sesion: 'Descanso', trabajo: 'Recuperación' },
-        36: { semana: 6, sesion: 'Piernas A Igual Día 29; progresión de repeticiones', trabajo: 'Sentadilla 4×8-10; RDL 3×10-12; zancada 3×10-12; hip thrust 4×10-12; pantorrilla 3×14-20; core 3×12-15' },
-        37: { semana: 6, sesion: 'Espalda/bíceps Igual Día 30; progresión de repeticiones', trabajo: 'Remo barra 4×10-12; remo unilateral 3×12-12; pullover 3×11-15; face pull 3×14-20; curl Z 3×10-12; martillo 2×12-15' },
+        36: { semana: 6, sesion: 'Piernas A', trabajo: 'Sentadilla 4×8-10; RDL 3×10-12; zancada 3×10-12; hip thrust 4×10-12; pantorrilla 3×14-20; core 3×12-15' },
+        37: { semana: 6, sesion: 'Espalda/bíceps', trabajo: 'Remo barra 4×10-12; remo unilateral 3×12-12; pullover 3×11-15; face pull 3×14-20; curl Z 3×10-12; martillo 2×12-15' },
         38: { semana: 6, sesion: 'LISS', trabajo: '35-45 min' },
-        39: { semana: 6, sesion: 'Pecho/hombros/tríceps Igual Día 32; progresión de repeticiones', trabajo: 'Press 4×10-12; press/flexiones 3×10-12; militar 3×10-12; laterales 3×14-20; tríceps 3×12-15' },
-        40: { semana: 6, sesion: 'Piernas B Igual Día 33; progresión de repeticiones', trabajo: 'Búlgara 3×10-12; sumo 3×10-12; step-up 3×10-12; hip thrust 4×10-12; curl 3×12-15; core 3×12-15' },
+        39: { semana: 6, sesion: 'Pecho/hombros/tríceps', trabajo: 'Press 4×10-12; press/flexiones 3×10-12; militar 3×10-12; laterales 3×14-20; tríceps 3×12-15' },
+        40: { semana: 6, sesion: 'Piernas B', trabajo: 'Búlgara 3×10-12; sumo 3×10-12; step-up 3×10-12; hip thrust 4×10-12; curl 3×12-15; core 3×12-15' },
         41: { semana: 6, sesion: 'LISS', trabajo: '40-50 min' },
         42: { semana: 6, sesion: 'Descanso', trabajo: 'Recuperación' },
-        43: { semana: 7, sesion: 'Piernas A aumentar peso', trabajo: 'Sentadilla 4×8-10; RDL 3×10-12; zancada 3×10-12; hip thrust 4×10-12; pantorrilla 3×14-20; core 3×12-15' },
-        44: { semana: 7, sesion: 'Espalda/bíceps aumentar peso', trabajo: 'Remo barra 4×10-12; remo unilateral 3×12-12; pullover 3×11-15; face pull 3×14-20; curl Z 3×10-12; martillo 2×12-15' },
+        43: { semana: 7, sesion: 'Piernas A', trabajo: 'Sentadilla 4×8-10; RDL 3×10-12; zancada 3×10-12; hip thrust 4×10-12; pantorrilla 3×14-20; core 3×12-15' },
+        44: { semana: 7, sesion: 'Espalda/bíceps', trabajo: 'Remo barra 4×10-12; remo unilateral 3×12-12; pullover 3×11-15; face pull 3×14-20; curl Z 3×10-12; martillo 2×12-15' },
         45: { semana: 7, sesion: 'LISS', trabajo: '35-45 min' },
-        46: { semana: 7, sesion: 'Pecho/hombros/tríceps aumentar peso', trabajo: 'Press 4×10-12; press/flexiones 3×10-12; militar 3×10-12; laterales 3×14-20; tríceps 3×12-15' },
-        47: { semana: 7, sesion: 'Piernas B aumentar peso', trabajo: 'Búlgara 3×10-12; sumo 3×10-12; step-up 3×10-12; hip thrust 4×10-12; curl 3×12-15; core 3×12-15' },
+        46: { semana: 7, sesion: 'Pecho/hombros/tríceps', trabajo: 'Press 4×10-12; press/flexiones 3×10-12; militar 3×10-12; laterales 3×14-20; tríceps 3×12-15' },
+        47: { semana: 7, sesion: 'Piernas B', trabajo: 'Búlgara 3×10-12; sumo 3×10-12; step-up 3×10-12; hip thrust 4×10-12; curl 3×12-15; core 3×12-15' },
         48: { semana: 7, sesion: 'LISS', trabajo: '40-50 min' },
         49: { semana: 7, sesion: 'Descanso', trabajo: 'Recuperación' },
         50: { semana: 8, sesion: 'Descarga piernas', trabajo: 'Sentadilla 3×8-10; RDL 2×10-12; zancada 2×10-12; hip thrust 3×10-12; pantorrilla 2×14-20; core 2×12-15' },
@@ -750,22 +715,22 @@ function generarPlan() {
     Object.assign(plan, f2);
 
     const f3 = {
-        64: { semana: 10, sesion: 'Piernas A Repite Día 57; intenta +1 rep/serie', trabajo: 'Sentadilla 5×6-10 o 4×7-10; RDL 4×8-10 o 3×9-10; zancada 4×8-12 o 3×9-12; hip thrust 4×8-12 o 4×8-12; pantorrilla 4×12-20 o 3×13-20; core 4×10-15 o 3×12-15' },
-        65: { semana: 10, sesion: 'Espalda/bíceps Repite Día 58; progresión', trabajo: 'Remo 4×8-10; unilateral 3×10-15; pullover 4×10-15; face pull 4×12-20; curl 4×8-12' },
+        64: { semana: 10, sesion: 'Piernas A', trabajo: 'Sentadilla 5×6-10 o 4×7-10; RDL 4×8-10 o 3×9-10; zancada 4×8-12 o 3×9-12; hip thrust 4×8-12 o 4×8-12; pantorrilla 4×12-20 o 3×13-20; core 4×10-15 o 3×12-15' },
+        65: { semana: 10, sesion: 'Espalda/bíceps', trabajo: 'Remo 4×8-10; unilateral 3×10-15; pullover 4×10-15; face pull 4×12-20; curl 4×8-12' },
         66: { semana: 10, sesion: 'LISS', trabajo: '35-45 min' },
-        67: { semana: 10, sesion: 'Torso Repite Día 60; progresión', trabajo: 'Press 4×8-10; segundo press 4×8-12; militar 4×8-10; laterales 4×12-20; tríceps 3×15-15' },
-        68: { semana: 10, sesion: 'Piernas B Repite Día 61; progresión', trabajo: 'Búlgara 4×8-12; sumo 4×6-10; step-up 4×8-12; hip thrust 4×12-15; curl 4×10-15; core 4×12-15' },
+        67: { semana: 10, sesion: 'Torso', trabajo: 'Press 4×8-10; segundo press 4×8-12; militar 4×8-10; laterales 4×12-20; tríceps 3×15-15' },
+        68: { semana: 10, sesion: 'Piernas B', trabajo: 'Búlgara 4×8-12; sumo 4×6-10; step-up 4×8-12; hip thrust 4×12-15; curl 4×10-15; core 4×12-15' },
         69: { semana: 10, sesion: 'LISS', trabajo: '40-50 min' },
         70: { semana: 10, sesion: 'Descanso', trabajo: 'Recuperación' },
-        71: { semana: 11, sesion: 'Piernas A aumentar carga si completaste rango', trabajo: 'Sentadilla 5×6-10 o 4×7-10; RDL 4×8-10 o 3×9-10; zancada 4×8-12 o 3×9-12; hip thrust 4×8-12 o 4×8-12; pantorrilla 4×12-20 o 3×13-20; core 4×10-15 o 3×12-15' },
-        72: { semana: 11, sesion: 'Espalda/bíceps aumentar carga si completaste rango', trabajo: 'Remo 4×8-10; unilateral 3×10-15; pullover 4×10-15; face pull 4×12-20; curl 4×8-12},
+        71: { semana: 11, sesion: 'Piernas A', trabajo: 'Sentadilla 5×6-10 o 4×7-10; RDL 4×8-10 o 3×9-10; zancada 4×8-12 o 3×9-12; hip thrust 4×8-12 o 4×8-12; pantorrilla 4×12-20 o 3×13-20; core 4×10-15 o 3×12-15' },
+        72: { semana: 11, sesion: 'Espalda/bíceps', trabajo: 'Remo 4×8-10; unilateral 3×10-15; pullover 4×10-15; face pull 4×12-20; curl 4×8-12' },
         73: { semana: 11, sesion: 'LISS', trabajo: '35-45 min' },
-        74: { semana: 11, sesion: 'Torso aumentar carga si completaste rango', trabajo: 'Press 4×8-10; segundo press 4×8-12; militar 4×8-10; laterales 4×12-20; tríceps 3×15-15'},
-        75: { semana: 11, sesion: 'Piernas B aumentar carga si completaste rango', trabajo: 'Búlgara 4×8-12; sumo 4×6-10; step-up 4×8-12; hip thrust 4×12-15; curl 4×10-15; core 4×12-15' },
+        74: { semana: 11, sesion: 'Torso', trabajo: 'Press 4×8-10; segundo press 4×8-12; militar 4×8-10; laterales 4×12-20; tríceps 3×15-15' },
+        75: { semana: 11, sesion: 'Piernas B', trabajo: 'Búlgara 4×8-12; sumo 4×6-10; step-up 4×8-12; hip thrust 4×12-15; curl 4×10-15; core 4×12-15' },
         76: { semana: 11, sesion: 'LISS', trabajo: '40-50 min' },
         77: { semana: 11, sesion: 'Descanso', trabajo: 'Recuperación' },
-        78: { semana: 12, sesion: 'Descarga piernas', trabajo: 'Sentadilla 3×6-10; RDL 3×8-10; zancada 3×8-12; hip thrust 3×8-12; pantorrilla 3×12-20; core 3×10-15'},
-        79: { semana: 12, sesion: 'Descarga espalda', trabajo: 'Remo 3×8-10; unilateral 3×10-15; pullover 3×10-15; face pull 3×12-20; curl 3×8-12},
+        78: { semana: 12, sesion: 'Descarga piernas', trabajo: 'Sentadilla 3×6-10; RDL 3×8-10; zancada 3×8-12; hip thrust 3×8-12; pantorrilla 3×12-20; core 3×10-15' },
+        79: { semana: 12, sesion: 'Descarga espalda', trabajo: 'Remo 3×8-10; unilateral 3×10-15; pullover 3×10-15; face pull 3×12-20; curl 3×8-12' },
         80: { semana: 12, sesion: 'LISS suave', trabajo: '25-35 min' },
         81: { semana: 12, sesion: 'Descarga torso', trabajo: 'Press 3×8-10; segundo press 3×8-12; militar 3×8-10; laterales 3×12-20; tríceps 3×15-15' },
         82: { semana: 12, sesion: 'Descarga piernas', trabajo: 'Búlgara 3×8-12; sumo 3×6-10; step-up 3×8-12; hip thrust 3×12-15; curl 3×10-15; core 3×12-15' },
@@ -782,25 +747,25 @@ function generarPlan() {
         89: { semana: 13, sesion: 'Piernas B', trabajo: 'Búlgara 3×8-10; sumo 3×6-8; step-up 3×8-12; hip thrust 3×8-12; curl 3×10-15' },
         90: { semana: 13, sesion: 'Cardio', trabajo: '30-45 min LISS' },
         91: { semana: 13, sesion: 'Descanso', trabajo: 'Recuperación' },
-        92: { semana: 14, sesion: 'Piernas A Día 85 con progresión', trabajo: 'Sentadilla 4×8-12; RDL 4×8-11; zancada 4×8-10; hip thrust 4×8-12; pantorrilla 4×12-20; core 3×12-15' },
-        93: { semana: 14, sesion: 'Espalda/bíceps Día 86 con progresión ', trabajo: 'Remo 4×8-11; unilateral 4×8-12; pullover 4×10-15; face pull 4×12-20; curl 4×8-12' },
+        92: { semana: 14, sesion: 'Piernas A', trabajo: 'Sentadilla 4×8-12; RDL 4×8-11; zancada 4×8-10; hip thrust 4×8-12; pantorrilla 4×12-20; core 3×12-15' },
+        93: { semana: 14, sesion: 'Espalda/bíceps', trabajo: 'Remo 4×8-11; unilateral 4×8-12; pullover 4×10-15; face pull 4×12-20; curl 4×8-12' },
         94: { semana: 14, sesion: 'LISS', trabajo: '30-40 min' },
-        95: { semana: 14, sesion: 'Torso Día 88 con progresión', trabajo: 'Press 4×8-11; segundo press 4×8-10; militar 4×8-11; laterales 4×12-20; tríceps 4×10-15' },
-        96: { semana: 14, sesion: 'Piernas B, Día 89 con progresión ', trabajo: 'Búlgara 3×8-10; sumo 3×6-8; step-up 3×8-12; hip thrust 3×8-12; curl 3×10-15' },
+        95: { semana: 14, sesion: 'Torso', trabajo: 'Press 4×8-11; segundo press 4×8-10; militar 4×8-11; laterales 4×12-20; tríceps 4×10-15' },
+        96: { semana: 14, sesion: 'Piernas B', trabajo: 'Búlgara 3×8-10; sumo 3×6-8; step-up 3×8-12; hip thrust 3×8-12; curl 3×10-15' },
         97: { semana: 14, sesion: 'Cardio', trabajo: '40-45 min LISS' },
         98: { semana: 14, sesion: 'Descanso', trabajo: 'Recuperación' },
-        99: { semana: 15, sesion: 'Piernas A RIR 1-2', trabajo: 'Sentadilla 4×8-12; RDL 4×8-11; zancada 4×8-10; hip thrust 4×8-12; pantorrilla 4×12-20; core 3×12-15' },
+        99: { semana: 15, sesion: 'Piernas A', trabajo: 'Sentadilla 4×8-12; RDL 4×8-11; zancada 4×8-10; hip thrust 4×8-12; pantorrilla 4×12-20; core 3×12-15' },
         100: { semana: 15, sesion: 'Espalda/bíceps', trabajo: 'Remo 4×8-11; unilateral 4×8-12; pullover 4×10-15; face pull 4×12-20; curl 4×8-12' },
         101: { semana: 15, sesion: 'LISS', trabajo: '30-40 min' },
         102: { semana: 15, sesion: 'Torso', trabajo: 'Press 4×8-11; segundo press 4×8-10; militar 4×8-11; laterales 4×12-20; tríceps 4×10-15' },
         103: { semana: 15, sesion: 'Piernas B', trabajo: 'Búlgara 4×8-10; sumo 4×6-8; step-up 4×8-12; hip thrust 4×8-12; curl 4×10-15' },
         104: { semana: 15, sesion: 'Intervalos moderados', trabajo: '5 min suave + 6×1 min moderado/2 min suave + 5 min suave' },
         105: { semana: 15, sesion: 'Descanso', trabajo: 'Recuperación' },
-        106: { semana: 16, sesion: 'Piernas A Suve', trabajo: 'Sentadilla 3×5-8; RDL 3×5-8; zancada 3×5-8; hip thrust 3×5-8; pantorrilla 3×5-8; core 3×5-8' },
-        107: { semana: 16, sesion: 'Espalda/bíceps Suve', trabajo: 'Remo 3×6-10; unilateral 3×6-10; pullover 3×6-10; face pull 3×6-10; curl 3×6-10' },
+        106: { semana: 16, sesion: 'Piernas A', trabajo: 'Sentadilla 3×5-8; RDL 3×5-8; zancada 3×5-8; hip thrust 3×5-8; pantorrilla 3×5-8; core 3×5-8' },
+        107: { semana: 16, sesion: 'Espalda/bíceps', trabajo: 'Remo 3×6-10; unilateral 3×6-10; pullover 3×6-10; face pull 3×6-10; curl 3×6-10' },
         108: { semana: 16, sesion: 'LISS', trabajo: '30-40 min' },
-        109: { semana: 16, sesion: 'Torso Suve', trabajo: 'Press 3×6-10; segundo press 3×6-10; militar 3×6-10; laterales 3×6-10; tríceps 3×6-10' },
-        110: { semana: 16, sesion: 'Piernas B Suve', trabajo: 'Búlgara 3×6-10; sumo 3×6-10; step-up 3×6-10; hip thrust 3×6-10; curl 3×6-10' },
+        109: { semana: 16, sesion: 'Torso', trabajo: 'Press 3×6-10; segundo press 3×6-10; militar 3×6-10; laterales 3×6-10; tríceps 3×6-10' },
+        110: { semana: 16, sesion: 'Piernas B', trabajo: 'Búlgara 3×6-10; sumo 3×6-10; step-up 3×6-10; hip thrust 3×6-10; curl 3×6-10' },
         111: { semana: 16, sesion: 'LISS', trabajo: '30-40 min' },
         112: { semana: 16, sesion: 'Evaluación', trabajo: 'Mediciones + recuperación' }
     };
@@ -837,208 +802,8 @@ function generarPlan() {
 }
 
 // ============================================================
-// GOOGLE DRIVE API
+// PROGRESO - LOCAL STORAGE
 // ============================================================
-function loadGapi() {
-    return new Promise((resolve, reject) => {
-        if (typeof gapi !== 'undefined' && gapi.client) { resolve(); return; }
-        const script = document.createElement('script');
-        script.src = 'https://apis.google.com/js/api.js';
-        script.onload = () => {
-            gapi.load('client', () => {
-                gapi.client.init({
-                    apiKey: '',
-                    clientId: CLIENT_ID,
-                    discoveryDocs: DISCOVERY_DOCS,
-                    scope: SCOPES
-                }).then(resolve).catch(reject);
-            });
-        };
-        script.onerror = reject;
-        document.head.appendChild(script);
-    });
-}
-
-function loadGis() {
-    return new Promise((resolve, reject) => {
-        if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) { resolve(); return; }
-        const script = document.createElement('script');
-        script.src = 'https://accounts.google.com/gsi/client';
-        script.onload = resolve;
-        script.onerror = reject;
-        document.head.appendChild(script);
-    });
-}
-
-async function initGapi() {
-    try {
-        await loadGapi();
-        await loadGis();
-        
-        tokenClient = google.accounts.oauth2.initTokenClient({
-            client_id: CLIENT_ID,
-            scope: SCOPES,
-            callback: (resp) => {
-                if (resp.error) {
-                    console.error('Error auth:', resp);
-                    updateAuthStatus(false);
-                    return;
-                }
-                updateAuthStatus(true);
-                cargarProgreso();
-            }
-        });
-        
-        if (gapi.client && gapi.client.getToken()) {
-            updateAuthStatus(true);
-            cargarProgreso();
-        } else {
-            updateAuthStatus(false);
-        }
-        
-        document.getElementById('splash').classList.add('hidden');
-        document.getElementById('app').classList.remove('hidden');
-        
-    } catch (e) {
-        console.error('Error init GAPI:', e);
-        document.getElementById('splash').innerHTML = `
-            <div style="color:#ef4444; font-size:2rem;">⚠️</div>
-            <h2 style="margin-top:16px;">Error de conexión</h2>
-            <p style="color:#8895a7;">No se pudo cargar Google Drive. Usando almacenamiento local.</p>
-            <button onclick="location.reload()" class="btn-primary mt-12" style="max-width:200px; margin:12px auto 0;">Reintentar</button>
-        `;
-        cargarProgresoLocal();
-        document.getElementById('splash').classList.add('hidden');
-        document.getElementById('app').classList.remove('hidden');
-    }
-}
-
-function updateAuthStatus(connected) {
-    const dot = document.getElementById('auth-dot');
-    const text = document.getElementById('auth-text');
-    const btn = document.getElementById('auth-btn');
-    
-    if (connected) {
-        dot.className = 'auth-dot online';
-        text.textContent = '✅ Conectado a Google Drive';
-        btn.textContent = 'Cerrar sesión';
-        btn.onclick = () => {
-            const token = gapi.client.getToken();
-            if (token) {
-                google.accounts.oauth2.revoke(token.access_token);
-                gapi.client.setToken(null);
-                updateAuthStatus(false);
-                toast('Sesión cerrada', 'success');
-            }
-        };
-    } else {
-        dot.className = 'auth-dot offline';
-        text.textContent = '🔴 No conectado a Google Drive';
-        btn.textContent = 'Iniciar sesión';
-        btn.onclick = () => {
-            if (tokenClient) {
-                tokenClient.requestAccessToken({ prompt: 'consent' });
-            } else {
-                toast('Error: No se pudo iniciar sesión', 'error');
-            }
-        };
-    }
-}
-
-// ============================================================
-// PROGRESO
-// ============================================================
-async function cargarProgreso() {
-    try {
-        if (!gapi.client || !gapi.client.getToken()) {
-            cargarProgresoLocal();
-            return;
-        }
-        
-        const response = await gapi.client.drive.files.list({
-            q: `name='${FILE_NAME}' and trashed=false`,
-            spaces: 'appDataFolder',
-            fields: 'files(id, name)'
-        });
-        
-        const files = response.result.files;
-        if (files && files.length > 0) {
-            const fileId = files[0].id;
-            const fileResp = await gapi.client.drive.files.get({
-                fileId: fileId,
-                alt: 'media'
-            });
-            progreso = fileResp.result;
-            if (!progreso.dias) progreso.dias = {};
-            if (!progreso.ejercicios) progreso.ejercicios = {};
-            toast('Progreso cargado desde Google Drive ✅', 'success');
-        } else {
-            progreso = { dias: {}, ejercicios: {} };
-            await guardarProgreso();
-            toast('Nuevo progreso creado en Google Drive', 'success');
-        }
-        actualizarUI();
-    } catch (e) {
-        console.error('Error cargando progreso:', e);
-        cargarProgresoLocal();
-    }
-}
-
-async function guardarProgreso() {
-    try {
-        if (!gapi.client || !gapi.client.getToken()) {
-            guardarProgresoLocal();
-            return;
-        }
-        
-        const content = JSON.stringify(progreso);
-        const blob = new Blob([content], { type: 'application/json' });
-        
-        const response = await gapi.client.drive.files.list({
-            q: `name='${FILE_NAME}' and trashed=false`,
-            spaces: 'appDataFolder',
-            fields: 'files(id, name)'
-        });
-        
-        const files = response.result.files;
-        let fileId = null;
-        
-        if (files && files.length > 0) {
-            fileId = files[0].id;
-            const metadata = new Blob([JSON.stringify({ name: FILE_NAME })], { type: 'application/json' });
-            const form = new FormData();
-            form.append('metadata', metadata);
-            form.append('file', blob);
-            
-            await fetch(`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${gapi.client.getToken().access_token}`
-                },
-                body: form
-            });
-        } else {
-            const metadata = new Blob([JSON.stringify({ name: FILE_NAME, parents: ['appDataFolder'] })], { type: 'application/json' });
-            const form = new FormData();
-            form.append('metadata', metadata);
-            form.append('file', blob);
-            
-            await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${gapi.client.getToken().access_token}`
-                },
-                body: form
-            });
-        }
-        guardarProgresoLocal();
-    } catch (e) {
-        console.error('Error guardando progreso:', e);
-        guardarProgresoLocal();
-        toast('⚠️ Guardado local (error en Drive)', 'error');
-    }
-}
-
 function cargarProgresoLocal() {
     try {
         const data = localStorage.getItem('entrenamiento_progreso');
@@ -1194,7 +959,7 @@ function mostrarDia(dia) {
         imgContainer.className = 'exercise-image';
         if (ej.info && ej.info.img) {
             const img = document.createElement('img');
-            img.src = IMG_BASE + encodeURIComponent(ej.info.img);
+            img.src = IMG_BASE + ej.info.img;
             img.alt = ej.nombre;
             img.loading = 'lazy';
             img.onerror = function() {
@@ -1228,7 +993,7 @@ function mostrarDia(dia) {
         checkbox.checked = checked;
         checkbox.addEventListener('change', () => {
             progreso.ejercicios[diaActual][key] = checkbox.checked;
-            guardarProgreso();
+            guardarProgresoLocal();
             actualizarHome();
             actualizarEstadoDia(diaActual);
         });
@@ -1264,7 +1029,7 @@ function actualizarEstadoDia(dia) {
     if (todosHechos && !diaCompletado && ejercicios.length > 0) {
         if (!progreso.dias[dia]) progreso.dias[dia] = {};
         progreso.dias[dia].completado = true;
-        guardarProgreso();
+        guardarProgresoLocal();
     }
     
     if (dia === diaActual) {
@@ -1339,7 +1104,13 @@ function actualizarDisplay() {
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
     PLAN = generarPlan();
-    initGapi();
+    
+    // Ocultar splash y mostrar app
+    setTimeout(() => {
+        document.getElementById('splash').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
+        cargarProgresoLocal();
+    }, 500);
     
     document.getElementById('nav-home').addEventListener('click', () => {
         document.getElementById('page-day').classList.add('hidden');
@@ -1389,7 +1160,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-reset').addEventListener('click', () => {
         if (confirm('¿Seguro que quieres reiniciar todo el progreso?')) {
             progreso = { dias: {}, ejercicios: {} };
-            guardarProgreso();
+            guardarProgresoLocal();
             actualizarUI();
             toast('Progreso reiniciado', 'success');
         }
@@ -1438,7 +1209,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!progreso.dias[diaActual]) progreso.dias[diaActual] = {};
         progreso.dias[diaActual].completado = true;
-        guardarProgreso();
+        guardarProgresoLocal();
         actualizarUI();
         mostrarDia(diaActual);
         toast('✅ Día completado', 'success');
@@ -1447,7 +1218,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('day-unmark').addEventListener('click', () => {
         if (progreso.dias[diaActual]) {
             progreso.dias[diaActual].completado = false;
-            guardarProgreso();
+            guardarProgresoLocal();
             actualizarUI();
             mostrarDia(diaActual);
             toast('Día desmarcado', 'success');
@@ -1460,7 +1231,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (progreso.dias[diaActual]) {
                 progreso.dias[diaActual].completado = false;
             }
-            guardarProgreso();
+            guardarProgresoLocal();
             actualizarUI();
             mostrarDia(diaActual);
             toast('Ejercicios reiniciados', 'success');
