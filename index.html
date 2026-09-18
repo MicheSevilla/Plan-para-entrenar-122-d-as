@@ -611,22 +611,9 @@ function parsearEjercicios(trabajo) {
         return [{ nombre: 'Recuperación', detalle: trabajo }];
     
     const ejercicios = [];
-    const partes = trabajo.split(/[;,]/).map(s => s.trim()).filter(s => s);
-    
-    for (const parte of partes) {
-        let nombre = parte;
-        let detalle = parte;
-        const match = parte.match(/^([a-zA-ZáéíóúñÑ\s\-]+?)\s*(\d+)\s*[×x*]\s*([\d\-]+)/i);
-        if (match) {
-            nombre = match[1].trim();
-            detalle = `${match[2]}×${match[3]}`;
-        } else {
-            const clean = parte.replace(/^\d+[×x*]\s*[\d\-]+\s*/i, '').trim();
-            if (clean) nombre = clean;
-        }
-        ejercicios.push({ nombre: nombre, detalle: detalle, info: getEjercicioInfo(nombre) });
-    }
-    return ejercicios.length > 0 ? ejercicios : [{ nombre: 'Ejercicio', detalle: trabajo }];
+    // Ahora separa por ; y por + (con espacios opcionales)
+    const partes = trabajo.split(/[;+]/).map(s => s.trim()).filter(s => s);
+    // ...
 }
 
 function getFase(dia) {
