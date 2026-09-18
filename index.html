@@ -519,7 +519,100 @@
             🔄 Reiniciar ejercicios del día
         </button>
     </div>
+        <!-- WARMUP PAGE -->
+    <div id="page-warmup" class="hidden">
+        <div class="nav-bar">
+            <button id="warmup-home">🏠 Inicio</button>
+        </div>
 
+        <h1 style="font-size:1.5rem; margin-bottom:4px;">🔥 Calentamiento</h1>
+        <p style="color:#8895a7; font-size:0.85rem; margin-bottom:16px;">8-10 minutos antes de cada sesión de fuerza</p>
+
+        <div class="card" style="border-color:#fb923c; border-width:2px;">
+            <div class="card-header">
+                <span class="card-title">🌡️ Bloque 1 — Elevar temperatura</span>
+                <span style="color:#fb923c; font-weight:700; font-size:0.9rem;">3 min</span>
+            </div>
+            <div style="padding-top:8px;">
+                <div class="warmup-item">
+                    <input type="checkbox" class="warmup-check" data-key="w1">
+                    <div>
+                        <div class="warmup-name">Marcha rápida</div>
+                    </div>
+                </div>
+                <div class="warmup-item">
+                    <input type="checkbox" class="warmup-check" data-key="w2">
+                    <div>
+                        <div class="warmup-name">Step suave</div>
+                    </div>
+                </div>
+                <div class="warmup-item">
+                    <input type="checkbox" class="warmup-check" data-key="w3">
+                    <div>
+                        <div class="warmup-name">Caminata rápida</div>
+                    </div>
+                </div>
+                <div class="warmup-item">
+                    <input type="checkbox" class="warmup-check" data-key="w4">
+                    <div>
+                        <div class="warmup-name">Cuerda</div>
+                        <div class="warmup-note">Únicamente si las articulaciones se sienten bien</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">🤸 Bloque 2 — Movilidad dinámica</span>
+                <span style="color:#60a5fa; font-weight:700; font-size:0.9rem;">1-2 rondas</span>
+            </div>
+            <div style="padding-top:8px;">
+                <div class="warmup-item">
+                    <input type="checkbox" class="warmup-check" data-key="w5">
+                    <div>
+                        <div class="warmup-name">10 círculos de hombros hacia delante</div>
+                    </div>
+                </div>
+                <div class="warmup-item">
+                    <input type="checkbox" class="warmup-check" data-key="w6">
+                    <div>
+                        <div class="warmup-name">10 círculos de hombros hacia atrás</div>
+                    </div>
+                </div>
+                <div class="warmup-item">
+                    <input type="checkbox" class="warmup-check" data-key="w7">
+                    <div>
+                        <div class="warmup-name">10 bisagras de cadera</div>
+                    </div>
+                </div>
+                <div class="warmup-item">
+                    <input type="checkbox" class="warmup-check" data-key="w8">
+                    <div>
+                        <div class="warmup-name">10 sentadillas sin peso</div>
+                    </div>
+                </div>
+                <div class="warmup-item">
+                    <input type="checkbox" class="warmup-check" data-key="w9">
+                    <div>
+                        <div class="warmup-name">10 elevaciones de rodilla por lado</div>
+                    </div>
+                </div>
+                <div class="warmup-item">
+                    <input type="checkbox" class="warmup-check" data-key="w10">
+                    <div>
+                        <div class="warmup-name">10 rotaciones torácicas por lado</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button id="warmup-mark-done" class="btn-success mt-8" style="width:100%; padding:14px;">✅ Marcar calentamiento completado</button>
+        <button id="warmup-reset" class="btn-outline mt-8" style="width:100%; padding:8px; font-size:0.85rem;">🔄 Reiniciar calentamiento</button>
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal-go-day" class="modal-overlay hidden">
     <!-- MODAL -->
     <div id="modal-go-day" class="modal-overlay hidden">
         <div class="modal">
