@@ -1289,7 +1289,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         mostrarDia(primerPendiente);
     });
-    
+    // ===== WARMUP =====
+document.getElementById('btn-warmup').addEventListener('click', () => {
+    document.getElementById('page-home').classList.add('hidden');
+    document.getElementById('page-day').classList.add('hidden');
+    document.getElementById('page-warmup').classList.remove('hidden');
+    cargarCalentamiento();
+});
+
+document.getElementById('warmup-home').addEventListener('click', () => {
+    document.getElementById('page-warmup').classList.add('hidden');
+    document.getElementById('page-home').classList.remove('hidden');
+    actualizarHome();
+});
+
+document.querySelectorAll('.warmup-check').forEach(check => {
+    check.addEventListener('change', () => {
+        if (!progreso.calentamiento) progreso.calentamiento = {};
+        progreso.calentamiento[check.dataset.key] = check.checked;
+        guardarProgresoLocal();
+    });
+});
+
+document.getElementById('warmup-mark-done').addEventListener('click', () => {
+    const checks = document.querySelectorAll('.warmup-check');
+    checks.forEach(c => {
+        c.checked = true;
+        if (!progreso.calentamiento) progreso.calentamiento = {};
+        progreso.calentamiento[c.dataset.key] = true;
+    });
+    guardarProgresoLocal();
+    toast('🔥 Calentamiento completado', 'success');
+});
+
+document.getElementById('warmup-reset').addEventListener('click', () => {
+    if (confirm('¿Reiniciar el calentamiento?')) {
+        progreso.calentamiento = {};
+        guardarProgresoLocal();
+        cargarCalentamiento();
+        toast('Calentamiento reiniciado', 'success');
+    }
+});
+
+document.getElementById('btn-go-day').addEventListener('click', () => {
+    document.getElementById('modal-go-day').classList.remove('hidden');
+    document.getElementById('modal-day-input').value = diaActual;
+});
     document.getElementById('btn-go-day').addEventListener('click', () => {
         document.getElementById('modal-go-day').classList.remove('hidden');
         document.getElementById('modal-day-input').value = diaActual;
