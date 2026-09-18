@@ -968,6 +968,12 @@ function guardarProgresoLocal() {
         console.error('Error guardando local:', e);
     }
 }
+function cargarCalentamiento() {
+    if (!progreso.calentamiento) progreso.calentamiento = {};
+    document.querySelectorAll('.warmup-check').forEach(check => {
+        check.checked = progreso.calentamiento[check.dataset.key] || false;
+    });
+}
 
 // ============================================================
 // UI
