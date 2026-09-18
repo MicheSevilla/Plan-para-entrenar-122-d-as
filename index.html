@@ -606,12 +606,14 @@ let timerActivo = false;
 // ============================================================
 function parsearEjercicios(trabajo) {
     if (!trabajo) return [{ nombre: 'Descanso', detalle: '' }];
-    if (trabajo.includes('min')) return [{ nombre: 'LISS', detalle: trabajo }];
-    if (trabajo.toLowerCase().includes('recuperación') || trabajo.toLowerCase().includes('movilidad')) 
+    
+    // Solo casos especiales de descanso/recuperación
+    if (trabajo.toLowerCase().includes('recuperación') && !trabajo.includes(';')) {
         return [{ nombre: 'Recuperación', detalle: trabajo }];
+    }
     
     const ejercicios = [];
-    // Separa por ; y por + 
+    // Separa por ; y por +
     const partes = trabajo.split(/[;+]/).map(s => s.trim()).filter(s => s);
     
     for (const parte of partes) {
