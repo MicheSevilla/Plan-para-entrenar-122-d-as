@@ -14,7 +14,7 @@
             max-width: 800px;
             margin: 0 auto;
             min-height: 100vh;
-            padding-bottom: 90px; /* espacio para el reproductor flotante */
+            padding-bottom: 90px;
         }
         button {
             cursor: pointer;
@@ -388,7 +388,6 @@
             margin-top: 4px;
         }
 
-        /* ===== WARMUP ===== */
         .warmup-item {
             display: flex;
             align-items: flex-start;
@@ -424,7 +423,6 @@
             box-shadow: 0 4px 20px rgba(251, 146, 60, 0.15);
         }
 
-        /* ===== SPOTIFY PANEL ===== */
         #spotify-panel {
             position: fixed;
             bottom: 0;
@@ -779,7 +777,7 @@
 const IMG_BASE = 'imagenes%20plan%20122%20d%C3%ADas/';
 
 // ============================================================
-// SPOTIFY CONFIG - REEMPLAZA CON TU CLIENT ID
+// SPOTIFY CONFIG
 // ============================================================
 const SPOTIFY_CLIENT_ID = '88f4b51a5ec04d45a475bb343942cfaa';
 const SPOTIFY_REDIRECT_URI = window.location.origin + window.location.pathname;
@@ -890,7 +888,7 @@ function getFase(dia) {
 }
 
 // ============================================================
-// GENERAR PLAN COMPLETO (igual que antes)
+// GENERAR PLAN COMPLETO
 // ============================================================
 function generarPlan() {
     const plan = [];
@@ -1364,14 +1362,12 @@ function actualizarDisplay() {
 // SPOTIFY - PKCE Y PLAYBACK
 // ============================================================
 
-// Generar string aleatorio para PKCE
 function generarRandomString(length) {
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const values = crypto.getRandomValues(new Uint8Array(length));
     return values.reduce((acc, x) => acc + possible[x % possible.length], '');
 }
 
-// Generar code challenge
 async function generarCodeChallenge(codeVerifier) {
     const encoder = new TextEncoder();
     const data = encoder.encode(codeVerifier);
@@ -1380,12 +1376,7 @@ async function generarCodeChallenge(codeVerifier) {
         .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-// Login con Spotify
 async function conectarSpotify() {
-    if (SPOTIFY_CLIENT_ID === '88f4b51a5ec04d45a475bb343942cfaa') {
-        toast('⚠️ Configura tu SPOTIFY_CLIENT_ID en el código', 'error');
-        return;
-    }
     const codeVerifier = generarRandomString(64);
     localStorage.setItem('spotify_code_verifier', codeVerifier);
     const codeChallenge = await generarCodeChallenge(codeVerifier);
@@ -1402,7 +1393,6 @@ async function conectarSpotify() {
     window.location.href = `https://accounts.spotify.com/authorize?${params.toString()}`;
 }
 
-// Verificar si volvemos del login
 async function verificarLoginSpotify() {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
@@ -1445,7 +1435,6 @@ async function verificarLoginSpotify() {
     }
 }
 
-// Refrescar token
 async function refrescarTokenSpotify() {
     const refreshToken = localStorage.getItem('spotify_refresh_token');
     if (!refreshToken) return false;
@@ -1464,6 +1453,10 @@ async function refrescarTokenSpotify() {
         if (data.access_token) {
             spotifyToken = data.access_token;
             localStorage.setItem('spotify_token', spotifyToken);
+            if (data.refresh_token) {
+                localStorage.setItem('spotify_refresh_token', data.refresh_token);
+            }
+            console.log('Token refrescado exitosamente');
             return true;
         }
     } catch (e) {
@@ -1472,29 +1465,57 @@ async function refrescarTokenSpotify() {
     return false;
 }
 
-// Inicializar reproductor
+async function transferirReproduccion(deviceId) {
+    try {
+        await fetch('https://api.spotify.com/v1/me/player', {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${spotifyToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                device_ids: [deviceId],
+                play: false
+            })
+        });
+        console.log('Reproducción transferida a la web');
+    } catch (e) {
+        console.error('Error al transferir:', e);
+    }
+}
+
 function iniciarReproductorSpotify() {
     if (!spotifyToken) return;
-
     if (spotifyPlayerReady) return;
 
     window.onSpotifyWebPlaybackSDKReady = () => {
         spotifyPlayer = new Spotify.Player({
             name: 'Entrenamiento 122 días',
             getOAuthToken: async cb => {
-                // Refrescar si es necesario
+                // Si hay token, verificar si necesita refresco
+                if (!spotifyToken) {
+                    const ok = await refrescarTokenSpotify();
+                    if (!ok) {
+                        cb('');
+                        return;
+                    }
+                }
+                // Intentar refrescar proactivamente para evitar errores 401
+                await refrescarTokenSpotify();
                 cb(spotifyToken);
             },
             volume: 0.8,
             enableMediaSession: true
         });
 
-        spotifyPlayer.addListener('ready', ({ device_id }) => {
+        spotifyPlayer.addListener('ready', async ({ device_id }) => {
             spotifyDeviceId = device_id;
             spotifyPlayerReady = true;
             console.log('Spotify listo:', device_id);
             document.getElementById('sp-connect-container').classList.add('hidden');
             document.getElementById('sp-player-container').classList.remove('hidden');
+            // Transferir la reproducción a nuestra web
+            await transferirReproduccion(device_id);
         });
 
         spotifyPlayer.addListener('not_ready', ({ device_id }) => {
@@ -1506,7 +1527,7 @@ function iniciarReproductorSpotify() {
             const track = state.track_window.current_track;
             document.getElementById('sp-track-name').textContent = track.name;
             document.getElementById('sp-track-artist').textContent = track.artists.map(a => a.name).join(', ');
-            
+
             const playBtn = document.getElementById('sp-play');
             if (state.paused) {
                 playBtn.textContent = '▶';
@@ -1518,7 +1539,6 @@ function iniciarReproductorSpotify() {
         spotifyPlayer.connect();
     };
 
-    // Si el SDK ya está cargado
     if (window.Spotify) {
         window.onSpotifyWebPlaybackSDKReady();
     }
@@ -1753,6 +1773,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('sp-play').addEventListener('click', async () => {
         if (!spotifyPlayer) return;
+        try {
+            await spotifyPlayer.activateElement();
+        } catch (e) {
+            console.log('activateElement falló:', e);
+        }
         const state = await spotifyPlayer.getCurrentState();
         if (state && state.paused) {
             spotifyPlayer.resume();
@@ -1761,12 +1786,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    document.getElementById('sp-prev').addEventListener('click', () => {
-        if (spotifyPlayer) spotifyPlayer.previousTrack();
+    document.getElementById('sp-prev').addEventListener('click', async () => {
+        if (!spotifyPlayer) return;
+        try {
+            await spotifyPlayer.activateElement();
+        } catch (e) {
+            console.log('activateElement falló:', e);
+        }
+        spotifyPlayer.previousTrack();
     });
 
-    document.getElementById('sp-next').addEventListener('click', () => {
-        if (spotifyPlayer) spotifyPlayer.nextTrack();
+    document.getElementById('sp-next').addEventListener('click', async () => {
+        if (!spotifyPlayer) return;
+        try {
+            await spotifyPlayer.activateElement();
+        } catch (e) {
+            console.log('activateElement falló:', e);
+        }
+        spotifyPlayer.nextTrack();
     });
 
     document.getElementById('sp-volume').addEventListener('input', (e) => {
