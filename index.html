@@ -380,6 +380,42 @@
             font-size: 0.7rem;
             margin-top: 4px;
         }
+        /* ===== WARMUP ===== */
+.warmup-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #1e2835;
+}
+.warmup-item:last-child { border-bottom: none; }
+.warmup-check {
+    margin-top: 3px;
+    width: 22px;
+    height: 22px;
+    accent-color: #fb923c;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.warmup-check:checked ~ div .warmup-name {
+    text-decoration: line-through;
+    color: #4a5568;
+}
+.warmup-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+.warmup-note {
+    font-size: 0.75rem;
+    color: #8895a7;
+    margin-top: 3px;
+    font-style: italic;
+}
+#btn-warmup:hover {
+    background: #3a2a1a;
+    box-shadow: 0 4px 20px rgba(251, 146, 60, 0.15);
+}
+        
     </style>
 </head>
 <body>
