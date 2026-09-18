@@ -31,7 +31,7 @@
         .mt-12 { margin-top: 12px; }
         .mb-8 { margin-bottom: 8px; }
         .mb-12 { margin-bottom: 12px; }
-        
+
         .card {
             background: #161c26;
             border-radius: 16px;
@@ -153,18 +153,18 @@
             gap: 10px;
         }
         .exercise-image {
-    width: 100px;
-    height: 100px;
-    border-radius: 10px;
-    background: #1e2835;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    flex-shrink: 0;
-    border: 1px solid #2a3340;
-    overflow: hidden;
-}
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            background: #1e2835;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+            border: 1px solid #2a3340;
+            overflow: hidden;
+        }
         .exercise-image img {
             width: 100%;
             height: 100%;
@@ -373,49 +373,49 @@
         .week-day.done { background: #22c55e; color: #0a0e14; }
         .week-day.today { border: 2px solid #f97316; }
         .week-day .day-num { font-weight: 700; font-size: 0.8rem; }
-        
+
         #save-status {
             text-align: center;
             color: #4a5568;
             font-size: 0.7rem;
             margin-top: 4px;
         }
+
         /* ===== WARMUP ===== */
-.warmup-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 10px 0;
-    border-bottom: 1px solid #1e2835;
-}
-.warmup-item:last-child { border-bottom: none; }
-.warmup-check {
-    margin-top: 3px;
-    width: 22px;
-    height: 22px;
-    accent-color: #fb923c;
-    cursor: pointer;
-    flex-shrink: 0;
-}
-.warmup-check:checked ~ div .warmup-name {
-    text-decoration: line-through;
-    color: #4a5568;
-}
-.warmup-name {
-    font-weight: 600;
-    font-size: 0.95rem;
-}
-.warmup-note {
-    font-size: 0.75rem;
-    color: #8895a7;
-    margin-top: 3px;
-    font-style: italic;
-}
-#btn-warmup:hover {
-    background: #3a2a1a;
-    box-shadow: 0 4px 20px rgba(251, 146, 60, 0.15);
-}
-        
+        .warmup-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #1e2835;
+        }
+        .warmup-item:last-child { border-bottom: none; }
+        .warmup-check {
+            margin-top: 3px;
+            width: 22px;
+            height: 22px;
+            accent-color: #fb923c;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .warmup-check:checked ~ div .warmup-name {
+            text-decoration: line-through;
+            color: #4a5568;
+        }
+        .warmup-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .warmup-note {
+            font-size: 0.75rem;
+            color: #8895a7;
+            margin-top: 3px;
+            font-style: italic;
+        }
+        #btn-warmup:hover {
+            background: #3a2a1a;
+            box-shadow: 0 4px 20px rgba(251, 146, 60, 0.15);
+        }
     </style>
 </head>
 <body>
@@ -549,7 +549,8 @@
             🔄 Reiniciar ejercicios del día
         </button>
     </div>
-        <!-- WARMUP PAGE -->
+
+    <!-- WARMUP PAGE -->
     <div id="page-warmup" class="hidden">
         <div class="nav-bar">
             <button id="warmup-home">🏠 Inicio</button>
@@ -643,8 +644,6 @@
 
     <!-- MODAL -->
     <div id="modal-go-day" class="modal-overlay hidden">
-    <!-- MODAL -->
-    <div id="modal-go-day" class="modal-overlay hidden">
         <div class="modal">
             <button class="close-modal" id="modal-close">✕</button>
             <h3>📅 Ir a un día</h3>
@@ -665,7 +664,7 @@
 
 <script>
 // ============================================================
-// CONFIGURACIÓN - SIN GOOGLE DRIVE
+// CONFIGURACIÓN
 // ============================================================
 const IMG_BASE = 'imagenes%20plan%20122%20d%C3%ADas/';
 
@@ -709,6 +708,7 @@ const EJERCICIOS_IMG = {
     'core': { img: null, desc: 'Core' },
     'intervalos': { img: null, desc: 'Intervalos' }
 };
+
 function getEjercicioInfo(nombre) {
     const clean = nombre.toLowerCase().trim();
     for (const [key, val] of Object.entries(EJERCICIOS_IMG)) {
@@ -735,16 +735,14 @@ let timerActivo = false;
 // ============================================================
 function parsearEjercicios(trabajo) {
     if (!trabajo) return [{ nombre: 'Descanso', detalle: '' }];
-    
-    // Solo casos especiales de descanso/recuperación
+
     if (trabajo.toLowerCase().includes('recuperación') && !trabajo.includes(';')) {
         return [{ nombre: 'Recuperación', detalle: trabajo }];
     }
-    
+
     const ejercicios = [];
-    // Separa por ; y por +
     const partes = trabajo.split(/[;+]/).map(s => s.trim()).filter(s => s);
-    
+
     for (const parte of partes) {
         let nombre = parte;
         let detalle = parte;
@@ -774,7 +772,7 @@ function getFase(dia) {
 // ============================================================
 function generarPlan() {
     const plan = [];
-    
+
     const f1 = {
         1: { semana: 1, sesion: 'Piernas A', trabajo: 'Sentadilla 3×8-12; RDL 3×8-12; zancada atrás 3×8-12/lado; hip thrust 3×10-15; pantorrilla 3×12-20; dead bug 3×8-12/lado' },
         2: { semana: 1, sesion: 'Espalda/bíceps', trabajo: 'Remo barra 3×8-12; remo unilateral 3×10-12; pullover 2×10-15; face pull 3×12-20; curl Z 3×8-12; martillo 2×10-15; Pallof 3×10-15' },
@@ -891,7 +889,7 @@ function generarPlan() {
         101: { semana: 15, sesion: 'LISS', trabajo: '30-40 min' },
         102: { semana: 15, sesion: 'Torso', trabajo: 'Press 4×8-11; segundo press 4×8-10; militar 4×8-11; laterales 4×12-20; tríceps 4×10-15' },
         103: { semana: 15, sesion: 'Piernas B', trabajo: 'Búlgara 4×8-10; sumo 4×6-8; step-up 4×8-12; hip thrust 4×8-12; curl 4×10-15' },
-        104: { semana: 15, sesion: 'Intervalos moderados', trabajo: '5 min suave + 6×1 min moderado/2 min suave + 5 min suave' },
+        104: { semana: 15, sesion: 'Intervalos moderados', trabajo: '5 min suave; 6×1 min moderado/2 min suave; 5 min suave' },
         105: { semana: 15, sesion: 'Descanso', trabajo: 'Recuperación' },
         106: { semana: 16, sesion: 'Piernas A', trabajo: 'Sentadilla 3×5-8; RDL 3×5-8; zancada 3×5-8; hip thrust 3×5-8; pantorrilla 3×5-8; core 3×5-8' },
         107: { semana: 16, sesion: 'Espalda/bíceps', trabajo: 'Remo 3×6-10; unilateral 3×6-10; pullover 3×6-10; face pull 3×6-10; curl 3×6-10' },
@@ -912,7 +910,7 @@ function generarPlan() {
         118: { semana: 17, sesion: 'LISS', trabajo: '45-60 min' },
         119: { semana: 17, sesion: 'Descanso', trabajo: 'Recuperación' },
         120: { semana: 18, sesion: 'Fuerza comparativa', trabajo: 'Repetir cargas de referencia del Día 1 y comparar repeticiones/RIR' },
-        121: { semana: 18, sesion: 'LISS + movilidad', trabajo: '30-40 min + 10-15 min movilidad' },
+        121: { semana: 18, sesion: 'LISS + movilidad', trabajo: '30-40 min; 10-15 min movilidad' },
         122: { semana: 18, sesion: 'Evaluación final', trabajo: 'Peso, perímetros, fotografías opcionales, rendimiento, adherencia y recuperación' }
     };
     Object.assign(plan, f5);
@@ -943,13 +941,14 @@ function cargarProgresoLocal() {
             progreso = JSON.parse(data);
             if (!progreso.dias) progreso.dias = {};
             if (!progreso.ejercicios) progreso.ejercicios = {};
+            if (!progreso.calentamiento) progreso.calentamiento = {};
         } else {
-            progreso = { dias: {}, ejercicios: {} };
+            progreso = { dias: {}, ejercicios: {}, calentamiento: {} };
             guardarProgresoLocal();
         }
         actualizarUI();
     } catch (e) {
-        progreso = { dias: {}, ejercicios: {} };
+        progreso = { dias: {}, ejercicios: {}, calentamiento: {} };
         guardarProgresoLocal();
         actualizarUI();
     }
@@ -962,6 +961,7 @@ function guardarProgresoLocal() {
         console.error('Error guardando local:', e);
     }
 }
+
 function cargarCalentamiento() {
     if (!progreso.calentamiento) progreso.calentamiento = {};
     document.querySelectorAll('.warmup-check').forEach(check => {
@@ -983,24 +983,24 @@ function actualizarHome() {
     const totalDias = 122;
     let completados = 0;
     let ejerciciosHechos = 0;
-    
+
     for (let i = 1; i <= totalDias; i++) {
         if (progreso.dias[i] && progreso.dias[i].completado) completados++;
         if (progreso.ejercicios[i]) {
             ejerciciosHechos += Object.values(progreso.ejercicios[i]).filter(v => v).length;
         }
     }
-    
+
     const porcentaje = Math.round((completados / totalDias) * 100);
     document.getElementById('home-progress-bar').style.width = porcentaje + '%';
     document.getElementById('home-progress-percent').textContent = porcentaje + '%';
     document.getElementById('home-days-done').textContent = completados;
-    
+
     const fase = getFase(Math.min(completados + 1, 122));
     document.getElementById('home-phase-badge').className = `phase-badge ${fase.color}`;
     document.getElementById('home-phase-badge').textContent = `F${fase.id}`;
     document.getElementById('home-phase-name').textContent = fase.nombre;
-    
+
     const fases = [
         { id: 1, inicio: 1, fin: 28 },
         { id: 2, inicio: 29, fin: 63 },
@@ -1015,13 +1015,13 @@ function actualizarHome() {
         if (progreso.dias[i] && progreso.dias[i].completado) hechosFase++;
     }
     document.getElementById('home-fase-days').textContent = `${hechosFase}/${totalFase} días`;
-    
+
     const semanaActual = Math.ceil((completados + 1) / 7);
     document.getElementById('home-week-num').textContent = semanaActual;
     const inicioSemana = (semanaActual - 1) * 7 + 1;
     const finSemana = Math.min(semanaActual * 7, 122);
     document.getElementById('home-week-range').textContent = `Días ${inicioSemana}-${finSemana}`;
-    
+
     const grid = document.getElementById('home-week-grid');
     grid.innerHTML = '';
     for (let i = inicioSemana; i <= finSemana; i++) {
@@ -1032,14 +1032,14 @@ function actualizarHome() {
         div.innerHTML = `<div class="day-num">${i}</div>`;
         grid.appendChild(div);
     }
-    
+
     let racha = 0;
     for (let i = completados; i > 0; i--) {
         if (progreso.dias[i] && progreso.dias[i].completado) racha++;
         else break;
     }
     document.getElementById('home-streak').textContent = racha;
-    
+
     const semana = Math.ceil((completados + 1) / 7);
     const inicio = (semana - 1) * 7 + 1;
     const fin = Math.min(semana * 7, 122);
@@ -1053,22 +1053,23 @@ function actualizarHome() {
 
 function mostrarDia(dia) {
     diaActual = Math.max(1, Math.min(122, dia));
-    
+
     const planDia = PLAN.find(p => p.dia === diaActual);
     if (!planDia) return;
-    
+
     document.getElementById('page-home').classList.add('hidden');
+    document.getElementById('page-warmup').classList.add('hidden');
     document.getElementById('page-day').classList.remove('hidden');
-    
+
     document.getElementById('day-number').textContent = `Día ${diaActual}`;
     document.getElementById('day-session').textContent = planDia.sesion;
-    
+
     const fase = planDia.fase;
     document.getElementById('day-phase-badge').className = `phase-badge ${fase.color}`;
     document.getElementById('day-phase-badge').textContent = `F${fase.id}`;
     document.getElementById('day-phase-name2').textContent = fase.nombre;
     document.getElementById('day-week').textContent = planDia.semana;
-    
+
     const completado = progreso.dias[diaActual] && progreso.dias[diaActual].completado;
     const status = document.getElementById('day-status');
     if (completado) {
@@ -1078,21 +1079,21 @@ function mostrarDia(dia) {
         status.className = 'day-pending';
         status.textContent = '⏳ Pendiente';
     }
-    
+
     const container = document.getElementById('day-exercises');
     container.innerHTML = '';
-    
+
     if (!progreso.ejercicios[diaActual]) {
         progreso.ejercicios[diaActual] = {};
     }
-    
+
     planDia.ejercicios.forEach((ej, idx) => {
         const item = document.createElement('div');
         item.className = 'exercise-item';
-        
+
         const key = `ex${idx}`;
         const checked = progreso.ejercicios[diaActual][key] || false;
-        
+
         const imgContainer = document.createElement('div');
         imgContainer.className = 'exercise-image';
         if (ej.info && ej.info.img) {
@@ -1110,21 +1111,21 @@ function mostrarDia(dia) {
             imgContainer.textContent = '💪';
             imgContainer.style.fontSize = '1.4rem';
         }
-        
+
         const info = document.createElement('div');
         info.className = 'exercise-info';
-        
+
         const name = document.createElement('div');
         name.className = 'exercise-name';
         name.innerHTML = `${ej.nombre} <span class="badge">${ej.detalle || ''}</span>`;
-        
+
         const details = document.createElement('div');
         details.className = 'exercise-details';
         details.innerHTML = `<span>${ej.info ? ej.info.desc : ''}</span>`;
-        
+
         info.appendChild(name);
         info.appendChild(details);
-        
+
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.className = 'exercise-check';
@@ -1135,41 +1136,41 @@ function mostrarDia(dia) {
             actualizarHome();
             actualizarEstadoDia(diaActual);
         });
-        
+
         const left = document.createElement('div');
         left.style.display = 'flex';
         left.style.alignItems = 'center';
         left.style.gap = '10px';
         left.appendChild(checkbox);
         left.appendChild(imgContainer);
-        
+
         item.appendChild(left);
         item.appendChild(info);
         container.appendChild(item);
     });
-    
+
     actualizarEstadoDia(diaActual);
 }
 
 function actualizarEstadoDia(dia) {
     const ejercicios = PLAN.find(p => p.dia === dia)?.ejercicios || [];
     if (ejercicios.length === 0) return;
-    
+
     let hechos = 0;
     const data = progreso.ejercicios[dia] || {};
     ejercicios.forEach((_, idx) => {
         if (data[`ex${idx}`]) hechos++;
     });
-    
+
     const todosHechos = hechos === ejercicios.length;
     const diaCompletado = progreso.dias[dia] && progreso.dias[dia].completado;
-    
+
     if (todosHechos && !diaCompletado && ejercicios.length > 0) {
         if (!progreso.dias[dia]) progreso.dias[dia] = {};
         progreso.dias[dia].completado = true;
         guardarProgresoLocal();
     }
-    
+
     if (dia === diaActual) {
         const status = document.getElementById('day-status');
         if (progreso.dias[dia] && progreso.dias[dia].completado) {
@@ -1208,15 +1209,15 @@ function iniciarTimer(segundos) {
         clearInterval(timerInterval);
         timerInterval = null;
     }
-    
+
     timerRestantes = segundos;
     timerActivo = true;
     actualizarDisplay();
-    
+
     timerInterval = setInterval(() => {
         timerRestantes--;
         actualizarDisplay();
-        
+
         if (timerRestantes <= 0) {
             clearInterval(timerInterval);
             timerInterval = null;
@@ -1226,7 +1227,7 @@ function iniciarTimer(segundos) {
             document.getElementById('timer-start').textContent = '▶ Iniciar';
         }
     }, 1000);
-    
+
     document.getElementById('timer-start').textContent = '⏸ Pausar';
 }
 
@@ -1242,28 +1243,28 @@ function actualizarDisplay() {
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
     PLAN = generarPlan();
-    
-    // Ocultar splash y mostrar app
+
     setTimeout(() => {
         document.getElementById('splash').classList.add('hidden');
         document.getElementById('app').classList.remove('hidden');
         cargarProgresoLocal();
     }, 500);
-    
+
+    // ===== NAVEGACIÓN DEL DÍA =====
     document.getElementById('nav-home').addEventListener('click', () => {
         document.getElementById('page-day').classList.add('hidden');
         document.getElementById('page-home').classList.remove('hidden');
         actualizarHome();
     });
-    
+
     document.getElementById('nav-prev').addEventListener('click', () => {
         mostrarDia(diaActual - 1);
     });
-    
+
     document.getElementById('nav-next').addEventListener('click', () => {
         mostrarDia(diaActual + 1);
     });
-    
+
     document.getElementById('nav-today').addEventListener('click', () => {
         let primerPendiente = 1;
         for (let i = 1; i <= 122; i++) {
@@ -1274,7 +1275,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         mostrarDia(primerPendiente);
     });
-    
+
+    // ===== BOTONES DE HOME =====
     document.getElementById('btn-continue').addEventListener('click', () => {
         let primerPendiente = 1;
         for (let i = 1; i <= 122; i++) {
@@ -1289,70 +1291,68 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         mostrarDia(primerPendiente);
     });
-    // ===== WARMUP =====
-document.getElementById('btn-warmup').addEventListener('click', () => {
-    document.getElementById('page-home').classList.add('hidden');
-    document.getElementById('page-day').classList.add('hidden');
-    document.getElementById('page-warmup').classList.remove('hidden');
-    cargarCalentamiento();
-});
 
-document.getElementById('warmup-home').addEventListener('click', () => {
-    document.getElementById('page-warmup').classList.add('hidden');
-    document.getElementById('page-home').classList.remove('hidden');
-    actualizarHome();
-});
-
-document.querySelectorAll('.warmup-check').forEach(check => {
-    check.addEventListener('change', () => {
-        if (!progreso.calentamiento) progreso.calentamiento = {};
-        progreso.calentamiento[check.dataset.key] = check.checked;
-        guardarProgresoLocal();
-    });
-});
-
-document.getElementById('warmup-mark-done').addEventListener('click', () => {
-    const checks = document.querySelectorAll('.warmup-check');
-    checks.forEach(c => {
-        c.checked = true;
-        if (!progreso.calentamiento) progreso.calentamiento = {};
-        progreso.calentamiento[c.dataset.key] = true;
-    });
-    guardarProgresoLocal();
-    toast('🔥 Calentamiento completado', 'success');
-});
-
-document.getElementById('warmup-reset').addEventListener('click', () => {
-    if (confirm('¿Reiniciar el calentamiento?')) {
-        progreso.calentamiento = {};
-        guardarProgresoLocal();
-        cargarCalentamiento();
-        toast('Calentamiento reiniciado', 'success');
-    }
-});
-
-document.getElementById('btn-go-day').addEventListener('click', () => {
-    document.getElementById('modal-go-day').classList.remove('hidden');
-    document.getElementById('modal-day-input').value = diaActual;
-});
     document.getElementById('btn-go-day').addEventListener('click', () => {
         document.getElementById('modal-go-day').classList.remove('hidden');
         document.getElementById('modal-day-input').value = diaActual;
     });
-    
+
     document.getElementById('btn-reset').addEventListener('click', () => {
         if (confirm('¿Seguro que quieres reiniciar todo el progreso?')) {
-            progreso = { dias: {}, ejercicios: {} };
+            progreso = { dias: {}, ejercicios: {}, calentamiento: {} };
             guardarProgresoLocal();
             actualizarUI();
             toast('Progreso reiniciado', 'success');
         }
     });
-    
+
+    // ===== WARMUP =====
+    document.getElementById('btn-warmup').addEventListener('click', () => {
+        document.getElementById('page-home').classList.add('hidden');
+        document.getElementById('page-day').classList.add('hidden');
+        document.getElementById('page-warmup').classList.remove('hidden');
+        cargarCalentamiento();
+    });
+
+    document.getElementById('warmup-home').addEventListener('click', () => {
+        document.getElementById('page-warmup').classList.add('hidden');
+        document.getElementById('page-home').classList.remove('hidden');
+        actualizarHome();
+    });
+
+    document.querySelectorAll('.warmup-check').forEach(check => {
+        check.addEventListener('change', () => {
+            if (!progreso.calentamiento) progreso.calentamiento = {};
+            progreso.calentamiento[check.dataset.key] = check.checked;
+            guardarProgresoLocal();
+        });
+    });
+
+    document.getElementById('warmup-mark-done').addEventListener('click', () => {
+        const checks = document.querySelectorAll('.warmup-check');
+        checks.forEach(c => {
+            c.checked = true;
+            if (!progreso.calentamiento) progreso.calentamiento = {};
+            progreso.calentamiento[c.dataset.key] = true;
+        });
+        guardarProgresoLocal();
+        toast('🔥 Calentamiento completado', 'success');
+    });
+
+    document.getElementById('warmup-reset').addEventListener('click', () => {
+        if (confirm('¿Reiniciar el calentamiento?')) {
+            progreso.calentamiento = {};
+            guardarProgresoLocal();
+            cargarCalentamiento();
+            toast('Calentamiento reiniciado', 'success');
+        }
+    });
+
+    // ===== MODAL IR A DÍA =====
     document.getElementById('modal-close').addEventListener('click', () => {
         document.getElementById('modal-go-day').classList.add('hidden');
     });
-    
+
     document.getElementById('modal-go-btn').addEventListener('click', () => {
         const dia = parseInt(document.getElementById('modal-day-input').value);
         if (dia >= 1 && dia <= 122) {
@@ -1362,34 +1362,35 @@ document.getElementById('btn-go-day').addEventListener('click', () => {
             toast('Día inválido (1-122)', 'error');
         }
     });
-    
+
     document.querySelectorAll('.quick-days button').forEach(btn => {
         btn.addEventListener('click', () => {
             document.getElementById('modal-day-input').value = btn.dataset.day;
         });
     });
-    
+
     document.getElementById('modal-go-day').addEventListener('click', (e) => {
         if (e.target === e.currentTarget) {
             document.getElementById('modal-go-day').classList.add('hidden');
         }
     });
-    
+
+    // ===== ACCIONES DEL DÍA =====
     document.getElementById('day-mark-done').addEventListener('click', () => {
         const ejercicios = PLAN.find(p => p.dia === diaActual)?.ejercicios || [];
         if (ejercicios.length === 0) return;
-        
+
         let todosHechos = true;
         const data = progreso.ejercicios[diaActual] || {};
         ejercicios.forEach((_, idx) => {
             if (!data[`ex${idx}`]) todosHechos = false;
         });
-        
+
         if (!todosHechos) {
             toast('⚠️ Completa todos los ejercicios primero', 'error');
             return;
         }
-        
+
         if (!progreso.dias[diaActual]) progreso.dias[diaActual] = {};
         progreso.dias[diaActual].completado = true;
         guardarProgresoLocal();
@@ -1397,7 +1398,7 @@ document.getElementById('btn-go-day').addEventListener('click', () => {
         mostrarDia(diaActual);
         toast('✅ Día completado', 'success');
     });
-    
+
     document.getElementById('day-unmark').addEventListener('click', () => {
         if (progreso.dias[diaActual]) {
             progreso.dias[diaActual].completado = false;
@@ -1407,7 +1408,7 @@ document.getElementById('btn-go-day').addEventListener('click', () => {
             toast('Día desmarcado', 'success');
         }
     });
-    
+
     document.getElementById('day-reset-exercises').addEventListener('click', () => {
         if (confirm('¿Reiniciar ejercicios de este día?')) {
             progreso.ejercicios[diaActual] = {};
@@ -1420,11 +1421,12 @@ document.getElementById('btn-go-day').addEventListener('click', () => {
             toast('Ejercicios reiniciados', 'success');
         }
     });
-    
+
+    // ===== CRONÓMETRO =====
     document.getElementById('timer-close-btn').addEventListener('click', () => {
         document.getElementById('timer-section').classList.add('hidden');
     });
-    
+
     document.querySelectorAll('#timer-presets button').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('#timer-presets button').forEach(b => b.classList.remove('active'));
@@ -1436,7 +1438,7 @@ document.getElementById('btn-go-day').addEventListener('click', () => {
             }
         });
     });
-    
+
     document.getElementById('timer-start').addEventListener('click', () => {
         if (timerActivo) {
             clearInterval(timerInterval);
@@ -1447,7 +1449,7 @@ document.getElementById('btn-go-day').addEventListener('click', () => {
         }
         iniciarTimer(timerRestantes > 0 ? timerRestantes : timerSegundos);
     });
-    
+
     document.getElementById('timer-reset').addEventListener('click', () => {
         if (timerInterval) {
             clearInterval(timerInterval);
